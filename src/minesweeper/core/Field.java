@@ -11,6 +11,10 @@ public class Field {
      */
     private final Tile[][] tiles;
 
+    public Tile[][] getTiles() {
+        return tiles;
+    }
+
     /**
      * Field row count. Rows are indexed from 0 to (rowCount - 1).
      */
@@ -112,10 +116,10 @@ public class Field {
         Random rd = new Random();
         int count = 0;
         while (count < mineCount) {
-            int row = rd.nextInt(rowCount - 1);
-            int column = rd.nextInt(columnCount - 1);
+            int row = rd.nextInt(rowCount);
+            int column = rd.nextInt(columnCount);
 
-            if (tiles[row][column] != null) {
+            if (tiles[row][column] == null) {
                 tiles[row][column] = new Mine();
                 count++;
             }
