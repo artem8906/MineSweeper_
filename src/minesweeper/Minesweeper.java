@@ -18,17 +18,18 @@ public class Minesweeper {
      */
     private Minesweeper() {
         userInterface = new ConsoleUI();
+        Field field = new Field(40, 50, 10);
 
-        Field field = new Field(9, 9, 10);
 
-        Tile[][] tiles = field.getTiles();
+//        Tile[][] tiles = field.getTiles();
+//
+//        for (Tile[] t : tiles) {
+//            for (Tile a : t) {
+//                System.out.print(a + " ");
+//            }
+//                System.out.println();
+//            }
 
-        for (Tile[] t : tiles) {
-            for (Tile a : t) {
-                System.out.print(a + " ");
-                System.out.println();
-            }
-        }
 
        userInterface.newGameStarted(field);
 

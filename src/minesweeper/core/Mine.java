@@ -6,6 +6,8 @@ package minesweeper.core;
 public class Mine extends Tile {
     @Override
     public String toString() {
-        return "*";
+        if (getState().equals(State.MARKED)) return "M";
+        else if (getState().equals(State.OPEN)) return "*";
+        else return "-";
     }
 }

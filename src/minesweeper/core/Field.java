@@ -139,7 +139,14 @@ public class Field {
      * @return true if game is solved, false otherwise
      */
     private boolean isSolved() {
-        return false;
+        int countOfOpen = 0;
+        for (int i = 0; i < tiles.length ; i++) {
+            for (int j = 0; j < tiles[i].length; j++) {
+                if (tiles[i][j].getState().equals(Tile.State.OPEN))
+                    countOfOpen++;
+            }
+        }
+        return (countOfOpen+mineCount) == rowCount*columnCount;
     }
 
     /**

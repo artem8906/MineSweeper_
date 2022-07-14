@@ -4,14 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import minesweeper.core.Field;
+import minesweeper.core.Tile;
 
 /**
  * Console user interface.
  */
-public class ConsoleUI {
+public class ConsoleUI implements minesweeper.UserInterface {
     /** Playing field. */
     private Field field;
-    
+
     /** Input reader. */
     private BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     
@@ -31,20 +32,42 @@ public class ConsoleUI {
      * Starts the game.
      * @param field field of mines and clues
      */
+    @Override
     public void newGameStarted(Field field) {
         this.field = field;
-        do {
+//        do {
             update();
-            processInput();
-            throw new UnsupportedOperationException("Resolve the game state - winning or loosing condition.");
-        } while(true);
+            //processInput();
+            //throw new UnsupportedOperationException("Resolve the game state - winning or loosing condition.");
+//        } while(true);
     }
-    
+
     /**
      * Updates user interface - prints the field.
      */
+    @Override
     public void update() {
-        throw new UnsupportedOperationException("Method update not yet implemented");
+        char a = 65;
+        System.out.print("  ");
+
+        for (int i = 0; i < field.getColumnCount(); i++) {
+         System.out.print(i + " ");
+        }
+
+        System.out.println();
+
+        for (int i = 0; i < field.getRowCount(); i++) {
+            if (a==91) a+=6;
+            System.out.printf("%c ", a); a++;
+            for (int j = 0; j < field.getColumnCount(); j++) {
+                if (j>9) System.out.print(" ");
+                System.out.print(field.getTiles(i,j) + " ");
+            }
+            System.out.println();
+        }
+
+
+
     }
     
     /**

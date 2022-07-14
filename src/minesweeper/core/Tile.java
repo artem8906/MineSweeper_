@@ -17,7 +17,7 @@ public abstract class Tile {
     
     /** Tile state. */
     private State state = State.CLOSED;
-        
+
     /**
      * Returns current state of this tile.
      * @return current state of this tile
@@ -36,6 +36,6 @@ public abstract class Tile {
 
     @Override
     public String toString() {
-        return state.toString();
+        return null;
     }
 }
