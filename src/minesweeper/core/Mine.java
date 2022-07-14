@@ -8,6 +8,6 @@ public class Mine extends Tile {
     public String toString() {
         if (getState().equals(State.MARKED)) return "M";
         else if (getState().equals(State.OPEN)) return "*";
-        else return "-";
+        else return super.toString();
     }
 }

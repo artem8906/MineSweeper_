@@ -60,14 +60,11 @@ public class ConsoleUI implements minesweeper.UserInterface {
             if (a==91) a+=6;
             System.out.printf("%c ", a); a++;
             for (int j = 0; j < field.getColumnCount(); j++) {
-                if (j>9) System.out.print(" ");
+                   if (j>9) System.out.print(" ");
                 System.out.print(field.getTiles(i,j) + " ");
             }
             System.out.println();
         }
-
-
-
     }
     
     /**

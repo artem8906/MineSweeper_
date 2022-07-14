@@ -36,6 +36,6 @@ public abstract class Tile {
 
     @Override
     public String toString() {
-        return null;
+        return "-";
     }
 }

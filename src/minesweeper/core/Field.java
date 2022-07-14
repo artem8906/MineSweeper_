@@ -102,10 +102,12 @@ public class Field {
      */
     public void markTile(int row, int column) {
         switch (tiles[row][column].getState()) {
-            case CLOSED: tiles[row][column].setState(Tile.State.MARKED);
-            break;
-            case MARKED: tiles[row][column].setState(Tile.State.CLOSED);
-            break;
+            case CLOSED:
+                tiles[row][column].setState(Tile.State.MARKED);
+                break;
+            case MARKED:
+                tiles[row][column].setState(Tile.State.CLOSED);
+                break;
         }
     }
 
@@ -125,10 +127,10 @@ public class Field {
             }
         }
 
-        for (int i = 0; i < tiles.length ; i++) {
+        for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
-                if (tiles[i][j]==null)
-                    tiles[i][j] = new Clue(countAdjacentMines(i,j));
+                if (tiles[i][j] == null)
+                    tiles[i][j] = new Clue(countAdjacentMines(i, j));
             }
         }
     }
@@ -140,13 +142,13 @@ public class Field {
      */
     private boolean isSolved() {
         int countOfOpen = 0;
-        for (int i = 0; i < tiles.length ; i++) {
+        for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
                 if (tiles[i][j].getState().equals(Tile.State.OPEN))
                     countOfOpen++;
             }
         }
-        return (countOfOpen+mineCount) == rowCount*columnCount;
+        return (countOfOpen + mineCount) == rowCount * columnCount;
     }
 
     /**
