@@ -35,6 +35,10 @@ public class Field {
      */
     private GameState state = GameState.PLAYING;
 
+    public void setState(GameState state) {
+        this.state = state;
+    }
+
     /**
      * Constructor.
      *
@@ -140,7 +144,7 @@ public class Field {
      *
      * @return true if game is solved, false otherwise
      */
-    private boolean isSolved() {
+    public boolean isSolved() {
         int countOfOpen = 0;
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {

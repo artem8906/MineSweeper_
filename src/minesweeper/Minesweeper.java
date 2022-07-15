@@ -18,31 +18,19 @@ public class Minesweeper {
      */
     private Minesweeper() {
         userInterface = new ConsoleUI();
-        Field field = new Field(40, 50, 10);
-
-
-//        Tile[][] tiles = field.getTiles();
-//
-//        for (Tile[] t : tiles) {
-//            for (Tile a : t) {
-//                System.out.print(a + " ");
-//            }
-//                System.out.println();
-//            }
-
-
-       userInterface.newGameStarted(field);
-
-        }
-
-        /**
-         * Main method.
-         * @param args arguments
-         */
-        public static void main (String[]args){
-
-            new Minesweeper();
-
-        }
+        Field field = new Field(10, 10, 10);
+        userInterface.newGameStarted(field);
     }
+
+    /**
+     * Main method.
+     *
+     * @param args arguments
+     */
+    public static void main(String[] args) {
+
+        new Minesweeper();
+
+    }
+}
 
