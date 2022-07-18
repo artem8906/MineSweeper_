@@ -145,14 +145,18 @@ public class Field {
      * @return true if game is solved, false otherwise
      */
     public boolean isSolved() {
-        int countOfOpen = 0;
+        return (getNumberOf(Tile.State.OPEN) + mineCount) == rowCount * columnCount;
+    }
+
+    private int getNumberOf(Tile.State state) {
+        int count = 0;
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
-                if (tiles[i][j].getState().equals(Tile.State.OPEN))
-                    countOfOpen++;
+                if (tiles[i][j].getState().equals(state))
+                    count++;
             }
         }
-        return (countOfOpen + mineCount) == rowCount * columnCount;
+        return count;
     }
 
     /**
@@ -178,6 +182,17 @@ public class Field {
             }
         }
 
+        return count;
+    }
+
+    public int getRemainingMineCount() {
+        int count = 0;
+        for (int i = 0; i < tiles.length; i++) {
+            for (int j = 0; j < tiles[i].length; j++) {
+                if (tiles[i][j].getState()== Tile.State.CLOSED && tiles[i][j] instanceof Mine)
+                    count++;
+            }
+        }
         return count;
     }
 }

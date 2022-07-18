@@ -24,8 +24,8 @@ public class ConsoleUI implements minesweeper.UserInterface {
      * Input reader.
      */
     private BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-    private static final Pattern p = Pattern.compile("([MO])([A-Za-z])(\\d{1,2})");
-
+    private static final Pattern PATTERN = Pattern.compile("([MO])([A-Za-z])(\\d{1,2})");
+    private static final int CHARINDEX = 65;
 
 
     /**
@@ -56,7 +56,7 @@ public class ConsoleUI implements minesweeper.UserInterface {
             //no update field output after open a mine
 
             if (field.getState().equals(GameState.FAILED)) {
-                System.out.println("Loose");
+                System.out.println("Loss");
                 System.exit(0);
             }
 
@@ -72,7 +72,7 @@ public class ConsoleUI implements minesweeper.UserInterface {
      */
     @Override
     public void update() {
-        char a = 65;
+        char a = CHARINDEX;
         System.out.print("  ");
         for (int i = 0; i < field.getColumnCount(); i++) {
             System.out.print(i + " ");
@@ -96,11 +96,23 @@ public class ConsoleUI implements minesweeper.UserInterface {
      */
     private void processInput() {
         String line = readLine();
-        if (line.equals("X")) return;
-        Matcher matcher = p.matcher(line);
-        String action = "";
-        String rowStr = "";
-        String colStr = "";
+
+        try {
+            handleInput(line);
+        }
+        catch (WrongFormatException e) {
+            e.getMessage();
+            processInput();
+        }
+
+    }
+
+    private void handleInput(String input) throws WrongFormatException {
+
+        if (input.equals("X")) return;
+        Matcher matcher = PATTERN.matcher(input);
+        String action = "",rowStr = "", colStr = "";
+
         if (matcher.find()) {
             action = matcher.group(1);
             rowStr = matcher.group(2);
@@ -108,10 +120,10 @@ public class ConsoleUI implements minesweeper.UserInterface {
         } else processInput();
 
         int column = Integer.parseInt(colStr);
-        int row = (int) rowStr.charAt(0) - 65;
+        int row = (int) rowStr.charAt(0) - CHARINDEX;
 
-        if ( column >= field.getColumnCount() | row < 0 | (row > 25 & row < 32) | row > 57  | row >= field.getRowCount() ) {
-            processInput();
+        if (column >= field.getColumnCount() | row < 0 | (row > 25 & row < 32) | row > 57 | row >= field.getRowCount()) {
+            throw new WrongFormatException("Wrong parameters of tile");
         }
 
         switch (action) {
@@ -121,10 +133,6 @@ public class ConsoleUI implements minesweeper.UserInterface {
             case "O":
                 field.openTile(row, column);
                 break;
-//                if (field.getTiles(row, column) instanceof Mine) {
-//                    field.getTiles(row, column).setState(Tile.State.OPEN);
-//                    field.setState(GameState.FAILED);
-//                    System.exit(0);
             default:
                 processInput();
         }
