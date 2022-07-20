@@ -47,9 +47,15 @@ public class Field {
      * @param mineCount   mine count
      */
     public Field(int rowCount, int columnCount, int mineCount) {
+
+        if ( mineCount > (rowCount * columnCount) ) {
+            throw new IllegalArgumentException();
+        }
+        else {
+            this.mineCount = mineCount;
+        }
         this.rowCount = rowCount;
         this.columnCount = columnCount;
-        this.mineCount = mineCount;
         tiles = new Tile[rowCount][columnCount];
 
         //generate the field content
@@ -86,6 +92,11 @@ public class Field {
         Tile tile = tiles[row][column];
         if (tile.getState() == Tile.State.CLOSED) {
             tile.setState(Tile.State.OPEN);
+            if(tile instanceof Clue
+                    && ((Clue)tile).getValue() == 0) {
+                getOpenAdjacentTiles(row, column);
+            }
+
             if (tile instanceof Mine) {
                 state = GameState.FAILED;
                 return;
@@ -148,7 +159,7 @@ public class Field {
         return (getNumberOf(Tile.State.OPEN) + mineCount) == rowCount * columnCount;
     }
 
-    private int getNumberOf(Tile.State state) {
+    public int getNumberOf(Tile.State state) {
         int count = 0;
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
@@ -195,4 +206,18 @@ public class Field {
         }
         return count;
     }
+    private void getOpenAdjacentTiles(int row, int column) {
+        for (int rowOffset = -1; rowOffset <= 1; rowOffset++) {
+            int actRow = row + rowOffset;
+            if (actRow >= 0 && actRow < rowCount) {
+                for (int columnOffset = -1; columnOffset <= 1; columnOffset++) {
+                    int actColumn = column + columnOffset;
+                    if (actColumn >= 0 && actColumn < columnCount) {
+                        openTile(actRow, actColumn);
+                    }
+                }
+            }
+        }
+    }
+
 }

@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import minesweeper.Minesweeper;
 import minesweeper.core.Field;
 import minesweeper.core.GameState;
 import minesweeper.core.Mine;
@@ -62,6 +63,8 @@ public class ConsoleUI implements minesweeper.UserInterface {
 
             if (field.isSolved()) {
                 System.out.println("Win");
+                Minesweeper instance = Minesweeper.getInstance();
+                instance.getBestTimes().addPlayerTime(instance.nameOfPlayer, instance.getPlayingSeconds());
                 System.exit(0);
             }
         } while (true);
