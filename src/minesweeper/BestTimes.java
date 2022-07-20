@@ -39,12 +39,10 @@ public class BestTimes implements Iterable<BestTimes.PlayerTime> {
      */
     public String toString() {
         Formatter f = new Formatter();
-        StringBuilder sb = new StringBuilder();
-        for (PlayerTime pt : playerTimes) {
-            sb.delete(0, sb.length());
-            sb.append(f.format("Player %s has time %d seconds%n", pt.name, pt.time));
-        }
-        return sb.toString();
+        for (PlayerTime pt : playerTimes)
+            f.format("Player %s has time %d seconds%n", pt.name, pt.time);
+
+        return f.toString();
     }
 
     /**
