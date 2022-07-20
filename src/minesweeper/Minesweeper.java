@@ -13,6 +13,7 @@ public class Minesweeper {
      */
     private ConsoleUI userInterface;
     private long startMillis = System.currentTimeMillis();
+    private static long endMillis;
 
     /**
      * Constructor.
@@ -24,7 +25,7 @@ public class Minesweeper {
     }
 
     public int getPlayingSeconds() {
-        return (int) (0 - startMillis) / 1000;
+        return (int) (endMillis - startMillis) / 1000;
     }
 
     /**
@@ -38,6 +39,8 @@ public class Minesweeper {
 //        bt.addPlayerTime("Baba", 65);
 //        System.out.println(bt);
           new Minesweeper();
+
+          endMillis = System.currentTimeMillis();
 
     }
 }
