@@ -20,13 +20,24 @@ public class Minesweeper {
     private ConsoleUI userInterface;
     private long startMillis = System.currentTimeMillis();
     private static Minesweeper instance;
-    private BestTimes bestTimes;
+    private BestTimes bestTimes = new BestTimes();
 
     public BestTimes getBestTimes() {
         return bestTimes;
     }
 
     public String nameOfPlayer;
+
+    private Settings settings;
+
+    public Settings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(Settings settings) throws IOException {
+        this.settings = settings;
+        settings.save();
+    }
 
     public static Minesweeper getInstance() {
         if (instance == null) new Minesweeper();
@@ -37,17 +48,28 @@ public class Minesweeper {
      * Constructor.
      */
     private Minesweeper() {
+//        System.out.println("Input game level \n B - BEGINNER  \n I - INTERMEDIATE \n E - EXPERT");
+//        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+//        try {
+//            String s = reader.readLine();
+//        } catch (IOException e) {
+//            e.getMessage();
+//        }
+        settings = Settings.load();
+
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             System.out.println("Enter you name");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             nameOfPlayer = reader.readLine();
+
         } catch (IOException e) {
             e.getMessage();
         }
 
         instance = this;
         userInterface = new ConsoleUI();
-        Field field = new Field(10, 10, 20);
+
+        Field field = new Field(settings.getRowCount(), settings.getColumnCount(), settings.getMineCount());
         userInterface.newGameStarted(field);
     }
 
@@ -61,10 +83,7 @@ public class Minesweeper {
      * @param args arguments
      */
     public static void main(String[] args) {
-//        BestTimes bt = new BestTimes();
-//        bt.addPlayerTime("Artem", 656);
-//        bt.addPlayerTime("Baba", 65);
-//        System.out.println(bt);
+
 
         new Minesweeper();
 

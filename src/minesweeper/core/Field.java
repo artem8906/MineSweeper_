@@ -92,16 +92,14 @@ public class Field {
         Tile tile = tiles[row][column];
         if (tile.getState() == Tile.State.CLOSED) {
             tile.setState(Tile.State.OPEN);
-            if(tile instanceof Clue
-                    && ((Clue)tile).getValue() == 0) {
+            if(tile instanceof Clue && ((Clue)tile).getValue() == 0) {
                 getOpenAdjacentTiles(row, column);
             }
-
             if (tile instanceof Mine) {
+                tile.setState(Tile.State.OPEN);
                 state = GameState.FAILED;
                 return;
             }
-
             if (isSolved()) {
                 state = GameState.SOLVED;
                 return;

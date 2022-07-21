@@ -50,6 +50,13 @@ public class ConsoleUI implements minesweeper.UserInterface {
     @Override
     public void newGameStarted(Field field) {
         this.field = field;
+        System.out.println("Input game level \n B - BEGINNER  \n I - INTERMEDIATE \n E - EXPERT");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            String s = reader.readLine();
+        } catch (IOException e) {
+            e.getMessage();
+        }
         do {
             update();
             processInput();//open is here
@@ -65,6 +72,7 @@ public class ConsoleUI implements minesweeper.UserInterface {
                 System.out.println("Win");
                 Minesweeper instance = Minesweeper.getInstance();
                 instance.getBestTimes().addPlayerTime(instance.nameOfPlayer, instance.getPlayingSeconds());
+                System.out.println(instance.getBestTimes());
                 System.exit(0);
             }
         } while (true);

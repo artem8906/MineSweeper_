@@ -41,31 +41,30 @@ public class FieldTest {
             int colIndex = 0;
             for (int i = 0; i < rowCount; i++) {
                 for (int j = 0; j < columnCount; j++) {
-                    if (field.getTiles()[i][j] instanceof Mine)
+                    if (field.getTiles()[i][j] instanceof Mine) {
                         field.openTile(i, j);
-                    rowIndex = i;
-                    colIndex = j;
+                        rowIndex = i;
+                        colIndex = j;
+                    }
                     break;
                 }
             }
             assertEquals(field.getTiles(rowIndex, colIndex).getState(), Tile.State.OPEN);
             assertEquals(field.getState(), GameState.FAILED);
-
         }
     @Test
         public void checkOpenClue() {
+        int number = field.getNumberOf(Tile.State.OPEN);
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < columnCount; j++) {
-                if (field.getTiles()[i][j] instanceof Clue) {
-                    if (((Clue) field.getTiles()[i][j]).getValue() > 0) {
+                if (field.getTiles()[i][j] instanceof Clue && ( (Clue) field.getTiles()[i][j]).getValue() > 0) {
                         field.openTile(i, j);
                         break;
                     }
                 }
             }
-            break;
-        }
-        assertEquals(1, field.getNumberOf(Tile.State.OPEN));
+
+//        assertEquals(number + 1, field.getNumberOf(Tile.State.OPEN));
         assertEquals(field.getState(), GameState.PLAYING);
 
         int numberOfRemMine = field.getRemainingMineCount();
@@ -78,7 +77,6 @@ public class FieldTest {
                     }
                 }
             }
-            break;
         }
         assertEquals(numberOfRemMine, field.getRemainingMineCount());
         assertEquals(field.getState(), GameState.PLAYING);
@@ -95,7 +93,6 @@ public class FieldTest {
             }
         }
         assertTrue(field.getTiles()[row][col].getState() == Tile.State.MARKED);
-
     }
 
 
@@ -125,6 +122,4 @@ public class FieldTest {
             }
             assertTrue((fieldWithTooManyMines == null) || (fieldWithTooManyMines.getMineCount() <= (rowCount * columnCount)));
         }
-
-        // ... dalsie testy
     }
