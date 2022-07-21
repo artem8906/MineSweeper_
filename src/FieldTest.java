@@ -39,10 +39,6 @@ public class FieldTest {
         public void checkOpenMine() {
             int rowIndex = 0;
             int colIndex = 0;
-<<<<<<< HEAD
-=======
-            Mine mine;
->>>>>>> origin/master
             for (int i = 0; i < rowCount; i++) {
                 for (int j = 0; j < columnCount; j++) {
                     if (field.getTiles()[i][j] instanceof Mine)
@@ -53,7 +49,6 @@ public class FieldTest {
                 }
             }
             assertEquals(field.getTiles(rowIndex, colIndex).getState(), Tile.State.OPEN);
-<<<<<<< HEAD
             assertEquals(field.getState(), GameState.FAILED);
 
         }
@@ -103,9 +98,7 @@ public class FieldTest {
 
     }
 
-=======
-        }
->>>>>>> origin/master
+
         @Test
         public void checkMinesCount() {
             int minesCounter = 0;

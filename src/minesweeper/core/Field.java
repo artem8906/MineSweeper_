@@ -56,7 +56,6 @@ public class Field {
         }
         this.rowCount = rowCount;
         this.columnCount = columnCount;
-        this.mineCount = mineCount;
         tiles = new Tile[rowCount][columnCount];
 
         //generate the field content
