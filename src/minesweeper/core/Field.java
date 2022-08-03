@@ -1,5 +1,7 @@
 package minesweeper.core;
 
+import minesweeper.Minesweeper;
+
 import java.util.Random;
 
 /**
@@ -96,16 +98,16 @@ public class Field {
                 getOpenAdjacentTiles(row, column);
             }
             if (tile instanceof Mine) {
-                tile.setState(Tile.State.OPEN);
-                state = GameState.FAILED;
-                return;
+                    setState(GameState.FAILED);
+                    return;
+                }
             }
             if (isSolved()) {
                 state = GameState.SOLVED;
                 return;
             }
         }
-    }
+
 
     /**
      * Marks tile at specified indeces.
@@ -190,7 +192,6 @@ public class Field {
                 }
             }
         }
-
         return count;
     }
 
@@ -216,6 +217,13 @@ public class Field {
                 }
             }
         }
+    }
+
+    public int getScore() {
+        return rowCount * columnCount * 10 - getPlayTimeInSeconds();
+    }
+    public int getPlayTimeInSeconds(){
+        return (int) ((System.currentTimeMillis() - Minesweeper.startMillis)/1000);
     }
 
 }

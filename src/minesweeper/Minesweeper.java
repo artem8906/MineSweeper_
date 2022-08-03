@@ -18,7 +18,7 @@ public class Minesweeper {
      * User interface.
      */
     private ConsoleUI userInterface;
-    private long startMillis = System.currentTimeMillis();
+    public static long startMillis = System.currentTimeMillis();
     private static Minesweeper instance;
     private BestTimes bestTimes = new BestTimes();
 
@@ -31,7 +31,7 @@ public class Minesweeper {
     private Settings settings;
 
     public Settings getSettings() {
-        return settings;
+        return this.settings;
     }
 
     public void setSettings(Settings settings) throws IOException {
@@ -40,7 +40,7 @@ public class Minesweeper {
     }
 
     public static Minesweeper getInstance() {
-        if (instance == null) new Minesweeper();
+        if (instance == null) {new Minesweeper();}
         return instance;
     }
 
@@ -48,25 +48,17 @@ public class Minesweeper {
      * Constructor.
      */
     private Minesweeper() {
-//        System.out.println("Input game level \n B - BEGINNER  \n I - INTERMEDIATE \n E - EXPERT");
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-//        try {
-//            String s = reader.readLine();
-//        } catch (IOException e) {
-//            e.getMessage();
-//        }
+        instance = this;
         settings = Settings.load();
-
         try {
             System.out.println("Enter you name");
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             nameOfPlayer = reader.readLine();
-
         } catch (IOException e) {
             e.getMessage();
         }
 
-        instance = this;
+
         userInterface = new ConsoleUI();
 
         Field field = new Field(settings.getRowCount(), settings.getColumnCount(), settings.getMineCount());
@@ -83,7 +75,6 @@ public class Minesweeper {
      * @param args arguments
      */
     public static void main(String[] args) {
-
 
         new Minesweeper();
 

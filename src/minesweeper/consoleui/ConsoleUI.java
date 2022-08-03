@@ -3,14 +3,19 @@ package minesweeper.consoleui;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import entity.Score;
 import minesweeper.Minesweeper;
+import minesweeper.Settings;
 import minesweeper.core.Field;
 import minesweeper.core.GameState;
 import minesweeper.core.Mine;
 import minesweeper.core.Tile;
+import service.ScoreService;
+import service.ScoreServiceJDBC;
 
 /**
  * Console user interface.
@@ -27,6 +32,8 @@ public class ConsoleUI implements minesweeper.UserInterface {
     private BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     private static final Pattern PATTERN = Pattern.compile("([MO])([A-Za-z])(\\d{1,2})");
     private static final int CHARINDEX = 65;
+
+    private static final String NAMEGAME = "MinesSweeper";
 
 
     /**
@@ -49,11 +56,20 @@ public class ConsoleUI implements minesweeper.UserInterface {
      */
     @Override
     public void newGameStarted(Field field) {
+
         this.field = field;
-        System.out.println("Input game level \n B - BEGINNER  \n I - INTERMEDIATE \n E - EXPERT");
+        var instance = Minesweeper.getInstance();
+
+        System.out.println("Input game level \n B - BEGINNER  \t I - INTERMEDIATE \t E - EXPERT");
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
-            String s = reader.readLine();
+            Settings s = switch (reader.readLine()) {
+                case "I" -> Settings.INTERMEDIATE;
+                case "E" -> Settings.EXPERT;
+                default -> Settings.BEGINNER;
+            };
+        instance.setSettings(s);
+        this.field = new Field(s.getRowCount(), s.getColumnCount(), s.getMineCount());
         } catch (IOException e) {
             e.getMessage();
         }
@@ -62,20 +78,31 @@ public class ConsoleUI implements minesweeper.UserInterface {
             processInput();//open is here
 
             //no update field output after open a mine
+            var fieldState=this.field.getState();
 
-            if (field.getState().equals(GameState.FAILED)) {
-                System.out.println("Loss");
+            if (fieldState == GameState.FAILED) {
+                new ScoreServiceJDBC().addScore(new Score(NAMEGAME, instance.nameOfPlayer, 0, new Date()));
+                System.out.println("Loss. Your score is 0");
+                outPutBestScores();
                 System.exit(0);
             }
 
-            if (field.isSolved()) {
-                System.out.println("Win");
-                Minesweeper instance = Minesweeper.getInstance();
-                instance.getBestTimes().addPlayerTime(instance.nameOfPlayer, instance.getPlayingSeconds());
-                System.out.println(instance.getBestTimes());
+            if (fieldState == GameState.SOLVED) {
+                new ScoreServiceJDBC().addScore(new Score(NAMEGAME, instance.nameOfPlayer, this.field.getScore(), new Date()));
+                System.out.println("Win. Your score is " + this.field.getScore());
+                outPutBestScores();
+
+
+//                instance.getBestTimes().addPlayerTime(instance.nameOfPlayer, instance.getPlayingSeconds());
+//                System.out.println(instance.getBestTimes());
                 System.exit(0);
             }
         } while (true);
+    }
+
+    private void outPutBestScores() {
+        System.out.println("Best scores are");
+        new ScoreServiceJDBC().getBestScores(NAMEGAME);
     }
 
     /**
@@ -110,8 +137,7 @@ public class ConsoleUI implements minesweeper.UserInterface {
 
         try {
             handleInput(line);
-        }
-        catch (WrongFormatException e) {
+        } catch (WrongFormatException e) {
             e.getMessage();
             processInput();
         }
@@ -122,7 +148,7 @@ public class ConsoleUI implements minesweeper.UserInterface {
 
         if (input.equals("X")) return;
         Matcher matcher = PATTERN.matcher(input);
-        String action = "",rowStr = "", colStr = "";
+        String action = "", rowStr = "", colStr = "";
 
         if (matcher.find()) {
             action = matcher.group(1);

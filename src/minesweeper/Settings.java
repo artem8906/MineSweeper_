@@ -48,23 +48,19 @@ public class Settings implements Serializable {
     }
 
     public void save() throws IOException {
-        FileOutputStream fos = new FileOutputStream(SETTING_FILE);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeObject(this);
-        oos.close();
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(SETTING_FILE);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+            oos.writeObject(this);
+        }
     }
 
     public static Settings load() {
-        try {
-            FileInputStream fis = new FileInputStream(SETTING_FILE);
-            ObjectInputStream ois = new ObjectInputStream(fis);
+        try (FileInputStream fis = new FileInputStream(SETTING_FILE);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
             return (Settings) ois.readObject();
         } catch (Exception e) {
+            e.getMessage();
             return BEGINNER;
-        }
-        finally {
-
         }
     }
 }
