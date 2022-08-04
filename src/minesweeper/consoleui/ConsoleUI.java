@@ -102,7 +102,7 @@ public class ConsoleUI implements minesweeper.UserInterface {
 
     private void outPutBestScores() {
         System.out.println("Best scores are");
-        new ScoreServiceJDBC().getBestScores(NAMEGAME);
+        System.out.println(new ScoreServiceJDBC().getBestScores(NAMEGAME));
     }
 
     /**

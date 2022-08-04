@@ -17,12 +17,11 @@ public class Score {
 
     @Override
     public String toString() {
-        return "Score{" +
-                "game='" + game + '\'' +
+        return "game='" + game + '\'' +
                 ", username='" + username + '\'' +
                 ", points=" + points +
                 ", playedOn=" + playedOn +
-                '}';
+                '}'+"\n";
     }
 
     public String getGame() {
