@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class ScoreServiceFile implements ScoreService {
     private List<Score> scores = new ArrayList<>();
-    public static final String file = "score.bin";
+    public static final String file = "score.txt";
 
     @Override
     public void addScore(Score score) {
@@ -22,9 +22,9 @@ public class ScoreServiceFile implements ScoreService {
     public List<Score> getBestScores(String game) {
         scores = load();
         return scores.stream().filter(s -> s.getGame().equals(game))
-                .sorted((s1,s2)-> Integer.compare(s1.getPoints(), s2.getPoints()))
+                .sorted((s1,s2)-> Integer.compare(s2.getPoints(), s1.getPoints()))
                 .limit(5)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

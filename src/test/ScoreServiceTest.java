@@ -62,7 +62,5 @@ public class ScoreServiceTest {
         assertEquals("Jergus", scores.get(2).getUsername());
         assertEquals(100, scores.get(2).getPoints());
         assertEquals(date, scores.get(2).getPlayedOn());
-
-
     }
 }
