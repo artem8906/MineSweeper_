@@ -1,3 +1,4 @@
+package test;
 
 import minesweeper.Minesweeper;
 import minesweeper.core.*;

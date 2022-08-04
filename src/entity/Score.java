@@ -1,8 +1,9 @@
 package entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Score {
+public class Score implements Serializable {
     private String game;
     private String username;
     private int points;
@@ -17,11 +18,10 @@ public class Score {
 
     @Override
     public String toString() {
-        return "game='" + game + '\'' +
+        return "\ngame='" + game + '\'' +
                 ", username='" + username + '\'' +
                 ", points=" + points +
-                ", playedOn=" + playedOn +
-                '}'+"\n";
+                ", playedOn=" + playedOn;
     }
 
     public String getGame() {

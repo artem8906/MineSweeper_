@@ -39,7 +39,7 @@ public class Minesweeper {
         settings.save();
     }
 
-    public static Minesweeper getInstance() {
+    public static Minesweeper getInstance() throws IOException {
         if (instance == null) {new Minesweeper();}
         return instance;
     }
@@ -47,7 +47,7 @@ public class Minesweeper {
     /**
      * Constructor.
      */
-    private Minesweeper() {
+    private Minesweeper() throws IOException {
         instance = this;
         settings = Settings.load();
         try {
@@ -74,7 +74,7 @@ public class Minesweeper {
      *
      * @param args arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         new Minesweeper();
 

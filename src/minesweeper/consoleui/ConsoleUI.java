@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import entity.Comment;
 import entity.Score;
 import minesweeper.Minesweeper;
 import minesweeper.Settings;
@@ -14,6 +15,7 @@ import minesweeper.core.Field;
 import minesweeper.core.GameState;
 import minesweeper.core.Mine;
 import minesweeper.core.Tile;
+import service.CommentServiceJDBC;
 import service.ScoreService;
 import service.ScoreServiceJDBC;
 
@@ -55,7 +57,7 @@ public class ConsoleUI implements minesweeper.UserInterface {
      * @param field field of mines and clues
      */
     @Override
-    public void newGameStarted(Field field) {
+    public void newGameStarted(Field field) throws IOException {
 
         this.field = field;
         var instance = Minesweeper.getInstance();
@@ -83,27 +85,32 @@ public class ConsoleUI implements minesweeper.UserInterface {
             if (fieldState == GameState.FAILED) {
                 new ScoreServiceJDBC().addScore(new Score(NAMEGAME, instance.nameOfPlayer, 0, new Date()));
                 System.out.println("Loss. Your score is 0");
-                outPutBestScores();
+                writeYourCommentAndFinalOutput();
                 System.exit(0);
             }
 
             if (fieldState == GameState.SOLVED) {
                 new ScoreServiceJDBC().addScore(new Score(NAMEGAME, instance.nameOfPlayer, this.field.getScore(), new Date()));
                 System.out.println("Win. Your score is " + this.field.getScore());
-                outPutBestScores();
-
-
-//                instance.getBestTimes().addPlayerTime(instance.nameOfPlayer, instance.getPlayingSeconds());
-//                System.out.println(instance.getBestTimes());
+                writeYourCommentAndFinalOutput();
                 System.exit(0);
             }
         } while (true);
     }
 
-    private void outPutBestScores() {
+    private void writeYourCommentAndFinalOutput() throws IOException {
+        var instance = Minesweeper.getInstance();
+        System.out.println("Write you comment");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        new CommentServiceJDBC().addComment(new Comment(NAMEGAME, instance.nameOfPlayer, reader.readLine(), new Date()));
+
         System.out.println("Best scores are");
         System.out.println(new ScoreServiceJDBC().getBestScores(NAMEGAME));
+
+        System.out.println("Last comments are:");
+        System.out.println(new CommentServiceJDBC().getComments(NAMEGAME));
     }
+
 
     /**
      * Updates user interface - prints the field.
