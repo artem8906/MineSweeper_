@@ -49,7 +49,7 @@ public class Comment {
 
     @Override
     public String toString() {
-        return "\nComment{" +
+        return "\n{" +
                 "game='" + game + '\'' +
                 ", username='" + username + '\'' +
                 ", comment='" + comment + '\'' +

@@ -3,11 +3,13 @@ package minesweeper.consoleui;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLOutput;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import entity.Comment;
+import entity.Rating;
 import entity.Score;
 import minesweeper.Minesweeper;
 import minesweeper.Settings;
@@ -15,9 +17,7 @@ import minesweeper.core.Field;
 import minesweeper.core.GameState;
 import minesweeper.core.Mine;
 import minesweeper.core.Tile;
-import service.CommentServiceJDBC;
-import service.ScoreService;
-import service.ScoreServiceJDBC;
+import service.*;
 
 /**
  * Console user interface.
@@ -99,16 +99,30 @@ public class ConsoleUI implements minesweeper.UserInterface {
     }
 
     private void writeYourCommentAndFinalOutput() throws IOException {
-        var instance = Minesweeper.getInstance();
-        System.out.println("Write you comment");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        new CommentServiceJDBC().addComment(new Comment(NAMEGAME, instance.nameOfPlayer, reader.readLine(), new Date()));
+        try {
+            var instance = Minesweeper.getInstance();
+            System.out.println("Write you comment");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            new CommentServiceJDBC().addComment(new Comment(NAMEGAME, instance.nameOfPlayer, reader.readLine(), new Date()));
 
-        System.out.println("Best scores are");
-        System.out.println(new ScoreServiceJDBC().getBestScores(NAMEGAME));
+            System.out.println("Best scores are");
+            System.out.println(new ScoreServiceJDBC().getBestScores(NAMEGAME));
 
-        System.out.println("Last comments are:");
-        System.out.println(new CommentServiceJDBC().getComments(NAMEGAME));
+            System.out.println("Last comments are:");
+            System.out.println(new CommentServiceJDBC().getComments(NAMEGAME));
+
+            System.out.println("Rate this game (from 1 to 5)");
+            new RatingServiceJDBC().setRating(
+                    new Rating(NAMEGAME, instance.nameOfPlayer, Integer.valueOf(reader.readLine()), new Date()));
+
+            System.out.println("Average rating of this game is");
+            System.out.println(new RatingServiceJDBC().getAverageRating(NAMEGAME));
+        }
+
+        catch (IOException e) {
+            throw new GameStudioException(e);
+        }
+
     }
 
 
