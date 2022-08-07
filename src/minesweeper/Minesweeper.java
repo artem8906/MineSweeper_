@@ -3,6 +3,7 @@ package minesweeper;
 import minesweeper.consoleui.ConsoleUI;
 import minesweeper.core.Field;
 import minesweeper.core.Tile;
+import service.GameStudioException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,54 +21,52 @@ public class Minesweeper {
     private ConsoleUI userInterface;
     public static long startMillis = System.currentTimeMillis();
     private static Minesweeper instance;
-    private BestTimes bestTimes = new BestTimes();
 
-    public BestTimes getBestTimes() {
-        return bestTimes;
-    }
+    static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-    public String nameOfPlayer;
+    public static String nameOfPlayer;
 
     private Settings settings;
 
-    public Settings getSettings() {
-        return this.settings;
+    private void inputName() throws IOException {
+        System.out.println("Enter you name");
+        nameOfPlayer = reader.readLine();
+        if (nameOfPlayer.length() < 1 | nameOfPlayer.length() > 64) {
+            throw new GameStudioException("Name is too short or too long. Try again");
+        }
     }
+
 
     public void setSettings(Settings settings) throws IOException {
         this.settings = settings;
         settings.save();
     }
 
-    public static Minesweeper getInstance() throws IOException {
-        if (instance == null) {new Minesweeper();}
+    public static Minesweeper getInstance() {
+        if (instance == null) {
+            new Minesweeper();
+        }
         return instance;
     }
 
     /**
      * Constructor.
      */
-    private Minesweeper() throws IOException {
+    private Minesweeper() {
         instance = this;
         settings = Settings.load();
         try {
-            System.out.println("Enter you name");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            nameOfPlayer = reader.readLine();
-        } catch (IOException e) {
-            e.getMessage();
+            inputName();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            new Minesweeper();
         }
 
-
         userInterface = new ConsoleUI();
-
         Field field = new Field(settings.getRowCount(), settings.getColumnCount(), settings.getMineCount());
         userInterface.newGameStarted(field);
     }
 
-    public int getPlayingSeconds() {
-        return (int) (System.currentTimeMillis() - startMillis) / 1000;
-    }
 
     /**
      * Main method.

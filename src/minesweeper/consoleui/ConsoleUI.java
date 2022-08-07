@@ -36,6 +36,7 @@ public class ConsoleUI implements minesweeper.UserInterface {
     private static final int CHARINDEX = 65;
 
     private static final String NAMEGAME = "MinesSweeper";
+    Minesweeper instance = Minesweeper.getInstance();
 
 
     /**
@@ -57,10 +58,10 @@ public class ConsoleUI implements minesweeper.UserInterface {
      * @param field field of mines and clues
      */
     @Override
-    public void newGameStarted(Field field) throws IOException {
+    public void newGameStarted(Field field) {
 
         this.field = field;
-        var instance = Minesweeper.getInstance();
+
 
         System.out.println("Input game level \n B - BEGINNER  \t I - INTERMEDIATE \t E - EXPERT");
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -70,61 +71,83 @@ public class ConsoleUI implements minesweeper.UserInterface {
                 case "E" -> Settings.EXPERT;
                 default -> Settings.BEGINNER;
             };
-        instance.setSettings(s);
-        this.field = new Field(s.getRowCount(), s.getColumnCount(), s.getMineCount());
+            instance.setSettings(s);
+            this.field = new Field(s.getRowCount(), s.getColumnCount(), s.getMineCount());
         } catch (IOException e) {
             e.getMessage();
         }
         do {
             update();
-            processInput();//open is here
+            processInput();
 
-            //no update field output after open a mine
-            var fieldState=this.field.getState();
+            var fieldState = this.field.getState();
 
             if (fieldState == GameState.FAILED) {
                 new ScoreServiceJDBC().addScore(new Score(NAMEGAME, instance.nameOfPlayer, 0, new Date()));
                 System.out.println("Loss. Your score is 0");
-                writeYourCommentAndFinalOutput();
+                endOfGame();
                 System.exit(0);
             }
 
             if (fieldState == GameState.SOLVED) {
                 new ScoreServiceJDBC().addScore(new Score(NAMEGAME, instance.nameOfPlayer, this.field.getScore(), new Date()));
                 System.out.println("Win. Your score is " + this.field.getScore());
-                writeYourCommentAndFinalOutput();
+                endOfGame();
                 System.exit(0);
             }
         } while (true);
     }
 
-    private void writeYourCommentAndFinalOutput() throws IOException {
-        try {
-            var instance = Minesweeper.getInstance();
-            System.out.println("Write you comment");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            new CommentServiceJDBC().addComment(new Comment(NAMEGAME, instance.nameOfPlayer, reader.readLine(), new Date()));
-
-            System.out.println("Best scores are");
-            System.out.println(new ScoreServiceJDBC().getBestScores(NAMEGAME));
-
-            System.out.println("Last comments are:");
-            System.out.println(new CommentServiceJDBC().getComments(NAMEGAME));
-
-            System.out.println("Rate this game (from 1 to 5)");
-            new RatingServiceJDBC().setRating(
-                    new Rating(NAMEGAME, instance.nameOfPlayer, Integer.valueOf(reader.readLine()), new Date()));
-
-            System.out.println("Average rating of this game is");
-            System.out.println(new RatingServiceJDBC().getAverageRating(NAMEGAME));
-        }
-
-        catch (IOException e) {
-            throw new GameStudioException(e);
-        }
-
+    private void endOfGame() {
+        handlerOfWriterComment();
+        handlerOfGivingRate();
+        printScoresAndComment();
     }
 
+    private void handlerOfGivingRate() {
+        try {
+            rateGame();
+        } catch (Exception e) {
+            System.out.println("From 1 to 5 only. Try again");
+            handlerOfGivingRate();
+        }
+    }
+
+    private void handlerOfWriterComment() {
+        try {
+            writeComment();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            handlerOfWriterComment();
+        }
+    }
+
+    private void writeComment() throws IOException {
+        System.out.println("Write you comment");
+        String comment = input.readLine();
+        if (comment.length() > 1000 | comment.length() == 0) {
+            throw new GameStudioException("Comment is too long or too short. Try again");
+        }
+        new CommentServiceJDBC().addComment(new Comment(NAMEGAME, instance.nameOfPlayer, comment, new Date()));
+    }
+
+    private void rateGame() throws IOException {
+        System.out.println("Rate this game (from 1 to 5)");
+        int rate = Integer.valueOf(input.readLine());
+        if (rate < 1 | rate > 5) throw new GameStudioException();
+        new RatingServiceJDBC().setRating(
+                new Rating(NAMEGAME, instance.nameOfPlayer, rate, new Date()));
+    }
+
+    private void printScoresAndComment() {
+        System.out.println("Best scores are");
+        System.out.println(new ScoreServiceJDBC().getBestScores(NAMEGAME));
+
+        System.out.println("Last comments are:");
+        System.out.println(new CommentServiceJDBC().getComments(NAMEGAME));
+
+        System.out.println("Average rating of this game is " + new RatingServiceJDBC().getAverageRating(NAMEGAME));
+    }
 
     /**
      * Updates user interface - prints the field.
