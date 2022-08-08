@@ -1,8 +1,6 @@
-package minesweeper;
+package minesweeper.consoleui;
 
-import javax.tools.FileObject;
 import java.io.*;
-import java.util.Objects;
 
 public class Settings implements Serializable {
     private final int rowCount;

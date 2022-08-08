@@ -3,7 +3,6 @@ package minesweeper.consoleui;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.SQLOutput;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,66 +11,53 @@ import entity.Comment;
 import entity.Rating;
 import entity.Score;
 import minesweeper.Minesweeper;
-import minesweeper.Settings;
 import minesweeper.core.Field;
 import minesweeper.core.GameState;
-import minesweeper.core.Mine;
-import minesweeper.core.Tile;
 import service.*;
 
-/**
- * Console user interface.
- */
 public class ConsoleUI implements minesweeper.UserInterface {
-    /**
-     * Playing field.
-     */
-    private Field field;
 
-    /**
-     * Input reader.
-     */
-    private BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+    private Field field;
+    private Settings settings;
+    private String nameOfPlayer;
+    private final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     private static final Pattern PATTERN = Pattern.compile("([MO])([A-Za-z])(\\d{1,2})");
     private static final int CHARINDEX = 65;
 
     private static final String NAMEGAME = "MinesSweeper";
     Minesweeper instance = Minesweeper.getInstance();
 
-
-    /**
-     * Reads line of text from the reader.
-     *
-     * @return line as a string
-     */
     private String readLine() {
         try {
             return input.readLine();
         } catch (IOException e) {
+            e.getMessage();
             return null;
         }
     }
 
-    /**
-     * Starts the game.
-     *
-     * @param field field of mines and clues
-     */
+    private void inputName() throws IOException {
+        System.out.println("Enter you name");
+        nameOfPlayer = input.readLine();
+        if (nameOfPlayer.length() < 1 | nameOfPlayer.length() > 64) {
+            throw new GameStudioException("Name is too short or too long. Try again");
+        }
+    }
+
     @Override
     public void newGameStarted(Field field) {
-
         this.field = field;
 
+        handleInputName();
 
         System.out.println("Input game level \n B - BEGINNER  \t I - INTERMEDIATE \t E - EXPERT");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
-            Settings s = switch (reader.readLine()) {
+            Settings s = switch (input.readLine()) {
                 case "I" -> Settings.INTERMEDIATE;
                 case "E" -> Settings.EXPERT;
                 default -> Settings.BEGINNER;
             };
-            instance.setSettings(s);
+            this.settings = s;
             this.field = new Field(s.getRowCount(), s.getColumnCount(), s.getMineCount());
         } catch (IOException e) {
             e.getMessage();
@@ -83,19 +69,37 @@ public class ConsoleUI implements minesweeper.UserInterface {
             var fieldState = this.field.getState();
 
             if (fieldState == GameState.FAILED) {
-                new ScoreServiceJDBC().addScore(new Score(NAMEGAME, instance.nameOfPlayer, 0, new Date()));
+                new ScoreServiceJDBC().addScore(new Score(NAMEGAME, nameOfPlayer, 0, new Date()));
                 System.out.println("Loss. Your score is 0");
                 endOfGame();
                 System.exit(0);
             }
 
             if (fieldState == GameState.SOLVED) {
-                new ScoreServiceJDBC().addScore(new Score(NAMEGAME, instance.nameOfPlayer, this.field.getScore(), new Date()));
+                new ScoreServiceJDBC().addScore(new Score(NAMEGAME, nameOfPlayer, this.field.getScore(), new Date()));
                 System.out.println("Win. Your score is " + this.field.getScore());
                 endOfGame();
                 System.exit(0);
             }
-        } while (true);
+        }
+
+            while (true);
+    }
+
+    private void handleInputName() {
+        try {
+            inputName();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            handleInputName();
+        }
+    }
+
+    @Override
+    public void play() {
+        settings = Settings.load();
+        Field field = new Field(settings.getRowCount(), settings.getColumnCount(), settings.getMineCount());
+        newGameStarted(field);
     }
 
     private void endOfGame() {
@@ -128,7 +132,7 @@ public class ConsoleUI implements minesweeper.UserInterface {
         if (comment.length() > 1000 | comment.length() == 0) {
             throw new GameStudioException("Comment is too long or too short. Try again");
         }
-        new CommentServiceJDBC().addComment(new Comment(NAMEGAME, instance.nameOfPlayer, comment, new Date()));
+        new CommentServiceJDBC().addComment(new Comment(NAMEGAME, nameOfPlayer, comment, new Date()));
     }
 
     private void rateGame() throws IOException {
@@ -136,7 +140,7 @@ public class ConsoleUI implements minesweeper.UserInterface {
         int rate = Integer.valueOf(input.readLine());
         if (rate < 1 | rate > 5) throw new GameStudioException();
         new RatingServiceJDBC().setRating(
-                new Rating(NAMEGAME, instance.nameOfPlayer, rate, new Date()));
+                new Rating(NAMEGAME, nameOfPlayer, rate, new Date()));
     }
 
     private void printScoresAndComment() {
@@ -149,9 +153,6 @@ public class ConsoleUI implements minesweeper.UserInterface {
         System.out.println("Average rating of this game is " + new RatingServiceJDBC().getAverageRating(NAMEGAME));
     }
 
-    /**
-     * Updates user interface - prints the field.
-     */
     @Override
     public void update() {
         char a = CHARINDEX;
@@ -172,20 +173,13 @@ public class ConsoleUI implements minesweeper.UserInterface {
         }
     }
 
-    /**
-     * Processes user input.
-     * Reads line from console and does the action on a playing field according to input string.
-     */
     private void processInput() {
-        String line = readLine();
-
         try {
-            handleInput(line);
+            handleInput(readLine());
         } catch (WrongFormatException e) {
             e.getMessage();
             processInput();
         }
-
     }
 
     private void handleInput(String input) throws WrongFormatException {
@@ -208,14 +202,9 @@ public class ConsoleUI implements minesweeper.UserInterface {
         }
 
         switch (action) {
-            case "M":
-                field.markTile(row, column);
-                break;
-            case "O":
-                field.openTile(row, column);
-                break;
-            default:
-                processInput();
+            case "M" -> field.markTile(row, column);
+            case "O" -> field.openTile(row, column);
+            default -> processInput();
         }
     }
 }

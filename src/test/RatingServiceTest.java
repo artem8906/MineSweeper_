@@ -1,11 +1,8 @@
 package test;
 
-import entity.Rating;
-import entity.Score;
-import org.junit.Test;
+import entity.Rating;;
+import org.junit.jupiter.api.Test;
 import service.*;
-
-import java.sql.SQLException;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,6 +48,5 @@ public class RatingServiceTest {
         catch (GameStudioException e) {
             assertTrue(true);
         }
-
     }
 }

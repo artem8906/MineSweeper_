@@ -8,13 +8,10 @@
 package service;
 
 import entity.Rating;
-import entity.Score;
-
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLOutput;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 
 public class RatingServiceJDBC implements RatingService{
     private static final String JDBC_URL = "jdbc:postgresql://localhost/gamestudio";
@@ -63,9 +60,10 @@ public class RatingServiceJDBC implements RatingService{
                     }
                 }
             }
-
         }
-        catch (SQLException e) {throw new GameStudioException(e);}
+        catch (SQLException e) {
+            throw new GameStudioException(e);
+        }
 
         }
 
